@@ -1,0 +1,7 @@
+certifi==2020.6.20
+charset-normalizer==3.2.0
+idna==3.3
+jsons==1.6.3
+requests==2.31.0
+typish==1.9.3
+urllib3==2.1.0
