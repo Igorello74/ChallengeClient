@@ -26,11 +26,10 @@ class Client:
     Public instance variables (fields):
         secret: a string with the secret token of the team
         round: an instance of Round (used in `fetch_new_task` and `get_tasks`)
-    
+
     Both of the fields are set in the constructor, but you can easily
     change their values during runtime if you need to.
     """
-    
     secret: str
     round: Round
     _base_url: str
@@ -63,6 +62,9 @@ class Client:
             ValueError: if both round_id and challenge_id are None
             NoRoundCurrentlyRunning: if round_id is None and no round is currently running.
         """
+        self.secret = secret
+        self._base_url = urljoin(base_url, "api/")
+
         if round_id is None:
             if challenge_id is None:
                 raise ValueError(
@@ -70,9 +72,6 @@ class Client:
             self.round = self._get_current_round(challenge_id)
         else:
             self.round = Round(round_id, datetime.min, datetime.max, True)
-
-        self.secret = secret
-        self._base_url = urljoin(base_url, "api/")
 
     def fetch_new_task(self, type: str | None) -> Task:
         """Fetch a new task of a given type.
@@ -96,10 +95,12 @@ class Client:
                 raise ValueError(
                     "You are not allowed to choose the task type in this round")
 
-        data = self._post("tasks", params)
-
-        if not data:
-            raise TasksOverError(type)
+        try:
+            data = self._post("tasks", params)
+        except requests.HTTPError as e:
+            if e.response is not None and e.response.status_code == 400:
+                raise TasksOverError(type)
+            raise
 
         return deserialize(data, Task)
 

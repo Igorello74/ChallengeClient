@@ -16,7 +16,7 @@ class Task:
     type_id: str
 
     question: str
-    user_hint: str
+    user_hint: Optional[str]
 
     team_answer: Optional[str]
     status: TaskStatus
@@ -35,6 +35,6 @@ class Round:
 @dataclass
 class Challenge:
     id: str
-    title: str
-    description: str
+    title: Optional[str]
+    description: Optional[str]
     rounds: list[Round]
