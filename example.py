@@ -1,11 +1,17 @@
 from API import Client, TaskStatus
+from tasks.json import solve
 
 client = Client(
-    "tkBOCFVdpTEHRHY6qIPrara/mf5pH2xK",
-    "https://igorello.free.beeceptor.com/",
-    round_id="projects-course-5-2")
+    "pfefcQ4kcNxiptieTbKOwC1WRBESHwH",
+    "https://d5du86l4q39mtqf01fce.apigw.yandexcloud.net/",
+    challenge_id="projects-course-personal")
 
-for task in client.get_tasks("math", TaskStatus.Pending, count=50):
-    print(task)
-    # for i in range(5):
-    #     print(client.submit_answer(task.id, answer='123'))
+for i in range(50):
+    task = client.fetch_new_task('json')
+    answer = solve(task.question)
+
+    status = client.submit_answer(task.id, answer).status
+    if status != TaskStatus.Success:
+        print("failed")
+        break
+    print("solved")
